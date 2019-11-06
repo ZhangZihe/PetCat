@@ -134,8 +134,8 @@ namespace PetCat
             int screenWidth = rect.Width;
             int screenHeight = rect.Height;
 
-            if (cat.Left < 0 && CurAct == ActType.Walk) CurAct = ActType.WalkR;
-            if (cat.Left + cat.Width > screenWidth && CurAct == ActType.WalkR) CurAct = ActType.Walk;
+            if (cat.Left < rect.X && CurAct == ActType.Walk) CurAct = ActType.WalkR;
+            if (cat.Left + cat.Width > screenWidth + rect.X && CurAct == ActType.WalkR) CurAct = ActType.Walk;
             if (cat.Top < 0 && rateY < 0) rateY = -rateY;
             if (cat.Top + cat.Height > screenHeight && rateY > 0) rateY = -rateY;
         }
