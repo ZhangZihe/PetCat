@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -69,8 +70,34 @@ namespace PetCat
 
             Task.Factory.StartNew(async () =>
             {
-                var url = $"http://i.itpk.cn/api.php?question={question}&limit=8&api_key=0810cfdbff6a22ad8d56f82be89b29c1&api_secret=c06syegrfvxj";
-                var answer = await Client.GetStringAsync(url);
+                var url = string.Empty;
+                var answer = string.Empty;
+
+                if (question.StartsWith("羊咩咩:") || question.StartsWith("羊咩咩："))
+                {
+                    question = question.Replace("羊咩咩:", "").Replace("羊咩咩：", "").Trim();
+                    url = $"https://open.feishu.cn/open-apis/bot/v2/hook/35e41144-2358-4b5b-a6ea-6bc146baece0";
+
+                    var obj = new 
+                    {
+                        msg_type = "text",
+                        content = new
+                        {
+                            text = question
+                        }
+                    };
+                    var content = JsonConvert.SerializeObject(obj);
+                    answer = await (await Client.PostAsync(url, new StringContent(content))).Content.ReadAsStringAsync();
+
+                    if (answer.Contains("success"))
+                        answer = "羊咩咩发送成功~";
+                }
+                else
+                {
+                    url = $"http://i.itpk.cn/api.php?question={question}&limit=8&api_key=0810cfdbff6a22ad8d56f82be89b29c1&api_secret=c06syegrfvxj";
+                    answer = await Client.GetStringAsync(url);
+                }
+                
                 Invoke(new Action(async () =>
                 {
                     txtTalk.AppendText($"【小咪】（{DateTime.Now.ToString("HH:mm:ss")}）：\r\n    {answer}\r\n\r\n");
